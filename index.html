@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>АвтоБаза.PRO — Авто под заказ из Кореи</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: #0f172a;
+      color: #f9fafb;
+      padding: 16px;
+    }
+
+    .app {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 20px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      color: #38bdf8;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #94a3b8;
+      margin-bottom: 16px;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .chip {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      font-size: 12px;
+      cursor: pointer;
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+    }
+
+    .chip.active {
+      border-color: #38bdf8;
+      background: radial-gradient(circle at top left, #38bdf8 0, #0f172a 55%, #020617 100%);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.95);
+      border-radius: 16px;
+      border: 1px solid #1f2937;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 18px 35px rgba(15, 23, 42, 0.8);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: #e5e7eb;
+    }
+
+    .badge.hot {
+      border-color: #f97316;
+      color: #fed7aa;
+    }
+
+    .title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .img-wrap {
+      border-radius: 12px;
+      overflow: hidden;
+      aspect-ratio: 16 / 9;
+      background: radial-gradient(circle at top, #1e293b, #020617);
+    }
+
+    .img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .info-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    .info-pill {
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: #020617;
+      border: 1px solid #1f2937;
+    }
+
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-top: 4px;
+    }
+
+    .price {
+      font-weight: 700;
+      font-size: 16px;
+      color: #fbbf24;
+    }
+
+    .price-note {
+      font-size: 11px;
+      color: #9ca3af;
+      text-align: right;
+    }
+
+    .btn {
+      margin-top: 6px;
+      padding: 9px 10px;
+      border-radius: 999px;
+      border: none;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #f9fafb;
+    }
+
+    .btn span.icon {
+      font-size: 16px;
+    }
+
+    .footnote {
+      margin-top: 16px;
+      font-size: 11px;
+      color: #6b7280;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="logo">АвтоБаза.PRO</div>
+    <div class="subtitle">
+      Витрина автомобилей в наличии и под заказ из Южной Кореи.  
+      Нажми на авто — заявка уйдёт в бота @avtobaza_pro_bot.
+    </div>
+
+    <div class="filters">
+      <div class="chip active" data-filter="all">Все авто</div>
+      <div class="chip" data-filter="sedan">Седаны</div>
+      <div class="chip" data-filter="suv">Кроссоверы / SUV</div>
+      <div class="chip" data-filter="ev">Электро</div>
+    </div>
+
+    <div id="cards" class="cards"></div>
+
+    <div class="footnote">
+      Цены ориентировочные для РФ с учётом доставки из Кореи.  
+      Точные просчёты и другие комплектации — в чате с менеджером.
+    </div>
+  </div>
+
+  <script>
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.expand();
+      tg.ready();
+    }
+
+    const BOT_USERNAME = "avtobaza_pro_bot";
+
+    const cars = [
+      {
+        id: "bmw_520i_2025",
+        type: "sedan",
+        title: "BMW 520i M Sport",
+        year: 2025,
+        power_kr: "190 л.с.",
+        power_ru: "249 л.с. в ПТС (льготная)",
+        engine: "2.0 бензин, автомат",
+        mileage: "до 30 000 км",
+        route: "Южная Корея → Владивосток → Москва",
+        price: "4 250 000 ₽",
+        price_note: "с ориентировочной растаможкой РФ",
+        tag: "Хит из Кореи",
+        img: "https://images.pexels.com/photos/1402787/pexels-photo-1402787.jpeg"
+      },
+      {
+        id: "gv80_30d_2023",
+        type: "suv",
+        title: "Genesis GV80 3.0D 4WD",
+        year: 2023,
+        power_kr: "278 л.с.",
+        power_ru: "249 л.с. в ПТС",
+        engine: "3.0 дизель, полный привод",
+        mileage: "20–60 000 км",
+        route: "Южная Корея → Владивосток → Краснодар/Москва",
+        price: "5 600 000 ₽",
+        price_note: "ориентир под ключ в РФ",
+        tag: "Premium",
+        img: "https://images.pexels.com/photos/97079/pexels-photo-97079.jpeg"
+      },
+      {
+        id: "kia_carnival_2023",
+        type: "suv",
+        title: "Kia Carnival 2.2D 8 мест",
+        year: 2023,
+        power_kr: "202 л.с.",
+        power_ru: "199–200 л.с. в ПТС",
+        engine: "2.2 дизель, автомат",
+        mileage: "до 80 000 км",
+        route: "Южная Корея → Приморье → любой регион РФ",
+        price: "3 650 000 ₽",
+        price_note: "под ключ (ориентир)",
+        tag: "Семейный",
+        img: "https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg"
+      },
+      {
+        id: "ioniq5_2024",
+        type: "ev",
+        title: "Hyundai IONIQ 5 Long Range",
+        year: 2024,
+        power_kr: "225–325 л.с.",
+        power_ru: "электро (льготы зависят от региона)",
+        engine: "Электро, задний/полный привод",
+        mileage: "до 40 000 км",
+        route: "Южная Корея → РФ / ЕАЭС",
+        price: "3 100 000 ₽",
+        price_note: "ориентировочно под ключ",
+        tag: "Электро",
+        img: "https://images.pexels.com/photos/1025469/pexels-photo-1025469.jpeg"
+      }
+    ];
+
+    function renderCards(filter = "all") {
+      const container = document.getElementById("cards");
+      container.innerHTML = "";
+
+      const filtered = filter === "all" ? cars : cars.filter(c => c.type === filter);
+
+      filtered.forEach((car) => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        card.innerHTML = `
+          <div class="card-header">
+            <div class="title">${car.title}</div>
+            <div class="badge ${car.tag === "Хит из Кореи" ? "hot" : ""}">${car.tag}</div>
+          </div>
+
+          <div class="img-wrap">
+            <img src="${car.img}" alt="${car.title}" loading="lazy" />
+          </div>
+
+          <div class="info-row">
+            <div class="info-pill">${car.year} год</div>
+            <div class="info-pill">${car.engine}</div>
+            <div class="info-pill">Корея → РФ</div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-pill">Корейская мощность: ${car.power_kr}</div>
+            <div class="info-pill">ПТС в РФ: ${car.power_ru}</div>
+          </div>
+
+          <div class="info-row">
+            <div class="info-pill">Пробег: ${car.mileage}</div>
+            <div class="info-pill">${car.route}</div>
+          </div>
+
+          <div class="price-row">
+            <div class="price">${car.price}</div>
+            <div class="price-note">${car.price_note}</div>
+          </div>
+
+          <button class="btn" data-id="${car.id}">
+            <span class="icon">🚗</span>
+            <span>Хочу расчёт по этому авто</span>
+          </button>
+        `;
+
+        const btn = card.querySelector("button");
+        btn.addEventListener("click", () => handleSelectCar(car));
+
+        container.appendChild(card);
+      });
+    }
+
+    function handleSelectCar(car) {
+      const startParam = encodeURIComponent("car_" + car.id);
+      const url = `https://t.me/${BOT_USERNAME}?start=${startParam}`;
+
+      if (tg && tg.initDataUnsafe) {
+        window.location.href = url;
+      } else {
+        window.open(url, "_blank");
+      }
+    }
+
+    document.querySelectorAll(".chip").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
+        chip.classList.add("active");
+        const filter = chip.dataset.filter;
+        renderCards(filter);
+      });
+    });
+
+    renderCards("all");
+  </script>
+</body>
+</html>
