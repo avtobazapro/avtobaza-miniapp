@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>АвтоБаза.PRO — Авто из Кореи в наличии</title>
+  <title>АвтоБаза.PRO — Заявка на подбор / запчасти</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <!-- Telegram WebApp JS -->
@@ -12,14 +12,13 @@
     :root {
       --bg: #f3f4f6;
       --shell-bg: #ffffff;
-      --card-bg: #ffffff;
-      --card-border: rgba(15, 23, 42, 0.06);
-      --accent: #2aabee; /* Telegram-голубой для акцентов */
-      --accent-soft: rgba(42, 171, 238, 0.08);
+      --border-soft: rgba(148, 163, 184, 0.5);
+      --border-input: rgba(148, 163, 184, 0.7);
       --text-main: #0f172a;
       --text-soft: #6b7280;
-      --price: #b45309;
-      --radius-xl: 20px;
+      --accent: #2aabee;
+      --error: #b91c1c;
+      --radius-xl: 24px;
       --shadow-soft: 0 20px 50px rgba(15, 23, 42, 0.08);
     }
 
@@ -42,18 +41,18 @@
 
     .shell {
       width: 100%;
-      max-width: 980px;
+      max-width: 580px;
       backdrop-filter: blur(12px);
       background: var(--shell-bg);
       border-radius: 28px;
-      border: 1px solid rgba(148, 163, 184, 0.3);
+      border: 1px solid var(--border-soft);
       box-shadow: var(--shadow-soft);
       padding: 18px 16px 18px;
     }
 
     @media (min-width: 768px) {
       .shell {
-        padding: 22px 22px 22px;
+        padding: 24px 24px 24px;
         margin-top: 20px;
       }
     }
@@ -62,7 +61,7 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
-      margin-bottom: 18px;
+      margin-bottom: 14px;
     }
 
     .brand-row {
@@ -93,22 +92,17 @@
       color: var(--text-soft);
     }
 
-    .tagline {
-      font-size: 13px;
-      color: var(--text-soft);
-      line-height: 1.6;
-    }
-
     .status-pill {
       padding: 4px 10px;
       font-size: 11px;
       border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
+      border: 1px solid var(--border-soft);
       color: var(--text-soft);
       display: inline-flex;
       align-items: center;
       gap: 6px;
       background: #f9fafb;
+      white-space: nowrap;
     }
 
     .status-pill-dot {
@@ -119,240 +113,140 @@
       box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.25);
     }
 
-    .filters-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 14px;
-      margin-top: 6px;
+    .tagline {
+      font-size: 13px;
+      color: var(--text-soft);
+      line-height: 1.5;
     }
 
-    .chips {
+    .tabs {
       display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .chip {
-      padding: 6px 12px;
+      margin-top: 12px;
+      margin-bottom: 10px;
+      background: #f3f4f6;
       border-radius: 999px;
-      border: 1px solid rgba(156, 163, 175, 0.9);
-      background: #f9fafb;
-      font-size: 12px;
+      padding: 3px;
+      border: 1px solid rgba(209, 213, 219, 0.9);
+    }
+
+    .tab {
+      flex: 1 1 0;
+      border: none;
+      background: transparent;
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 13px;
       cursor: pointer;
       color: var(--text-soft);
-      transition: 0.18s ease;
+      transition: 0.16s ease;
     }
 
-    .chip span.dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: rgba(148, 163, 184, 0.9);
-      display: inline-block;
-      margin-right: 6px;
-    }
-
-    .chip.active {
-      border-color: var(--accent);
+    .tab.active {
+      background: #ffffff;
       color: var(--text-main);
-      background: rgba(239, 246, 255, 1);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
     }
 
-    .chip.active span.dot {
-      background: var(--accent);
-    }
-
-    .small-note {
-      font-size: 11px;
-      color: var(--text-soft);
-      opacity: 0.9;
-      text-align: right;
-      flex: 1 1 auto;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 14px;
-    }
-
-    @media (min-width: 720px) {
-      .grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    .card {
-      background: var(--card-bg);
-      border-radius: var(--radius-xl);
-      border: 1px solid var(--card-border);
-      padding: 12px;
+    form {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      position: relative;
-      overflow: hidden;
+      gap: 10px;
     }
 
-    .card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(
-        circle at top right,
-        var(--accent-soft),
-        transparent 60%
-      );
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.18s ease;
-    }
-
-    .card:hover::before {
-      opacity: 1;
-    }
-
-    .card.sold {
-      opacity: 0.6;
-      filter: grayscale(0.1);
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 6px;
-    }
-
-    .title-block {
-      display: flex;
+    .tab-panel {
+      display: none;
       flex-direction: column;
-      gap: 2px;
-    }
-
-    .title-main {
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-    }
-
-    .title-meta {
-      font-size: 11px;
-      color: var(--text-soft);
-    }
-
-    .badge {
-      padding: 3px 9px;
-      font-size: 11px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      color: var(--text-soft);
-      white-space: nowrap;
-      text-align: right;
-      background: #f9fafb;
-    }
-
-    .badge.hot {
-      border-color: var(--accent);
-      color: var(--accent);
-      background: #eef6ff;
-    }
-
-    .badge.sold {
-      border-color: rgba(248, 113, 113, 0.9);
-      color: #b91c1c;
-      background: #fee2e2;
-    }
-
-    .media-wrap {
-      border-radius: 16px;
-      overflow: hidden;
-      aspect-ratio: 16 / 9;
+      gap: 10px;
       margin-top: 6px;
-      background: #e5e7eb;
-      position: relative;
     }
 
-    .media-wrap img {
+    .tab-panel.active {
+      display: flex;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    label {
+      font-size: 12px;
+      color: var(--text-soft);
+    }
+
+    .required-dot {
+      color: #ef4444;
+      margin-left: 2px;
+    }
+
+    input[type="text"],
+    textarea {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      transform: scale(1.01);
-      transition: transform 0.2s ease-out;
-    }
-
-    .card:hover .media-wrap img {
-      transform: scale(1.04);
-    }
-
-    .media-label {
-      position: absolute;
-      left: 10px;
-      bottom: 9px;
-      padding: 3px 8px;
-      font-size: 10px;
       border-radius: 999px;
-      background: rgba(15, 23, 42, 0.75);
-      color: #e5e7eb;
-      border: 1px solid rgba(148, 163, 184, 0.9);
-      backdrop-filter: blur(8px);
+      border: 1px solid var(--border-input);
+      padding: 8px 12px;
+      font-size: 13px;
+      outline: none;
+      background: #f9fafb;
+      color: var(--text-main);
+      transition: border-color 0.15s ease, background-color 0.15s ease;
     }
 
-    .rows {
+    textarea {
+      border-radius: 16px;
+      resize: vertical;
+      min-height: 70px;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: var(--accent);
+      background: #ffffff;
+    }
+
+    .two-cols {
       display: flex;
-      flex-direction: column;
-      gap: 5px;
-      margin-top: 6px;
+      gap: 8px;
     }
 
-    .row {
+    .two-cols .field-group {
+      flex: 1 1 0;
+    }
+
+    .fuel-options {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
-      font-size: 11px;
     }
 
-    .pill {
-      padding: 3px 8px;
+    .fuel-chip {
+      padding: 6px 10px;
+      font-size: 12px;
       border-radius: 999px;
+      border: 1px solid var(--border-input);
       background: #f9fafb;
-      border: 1px solid rgba(209, 213, 219, 0.9);
       color: var(--text-soft);
+      cursor: pointer;
+      transition: 0.15s ease;
     }
 
-    .power-pill {
-      border-style: dashed;
+    .fuel-chip.active {
+      border-color: var(--accent);
+      background: #e0f2fe;
+      color: var(--text-main);
     }
 
-    .price-row {
-      margin-top: 4px;
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 6px;
-    }
-
-    .price-main {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--price);
-    }
-
-    .price-sub {
+    .hint {
       font-size: 11px;
       color: var(--text-soft);
-      text-align: right;
     }
 
     .btn {
-      margin-top: 8px;
+      margin-top: 10px;
       border: none;
       border-radius: 999px;
-      padding: 9px 12px;
+      padding: 10px 12px;
       font-size: 13px;
       font-weight: 600;
       display: inline-flex;
@@ -376,11 +270,22 @@
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
     }
 
-    .footnote {
-      margin-top: 16px;
+    .form-message {
+      margin-top: 6px;
       font-size: 11px;
       color: var(--text-soft);
-      line-height: 1.5;
+      white-space: pre-line;
+    }
+
+    .form-message.error {
+      color: var(--error);
+    }
+
+    .footnote {
+      margin-top: 14px;
+      font-size: 11px;
+      color: var(--text-soft);
+      line-height: 1.4;
     }
   </style>
 </head>
@@ -394,45 +299,223 @@
         </div>
         <div class="status-pill">
           <span class="status-pill-dot"></span>
-          Витрина авто в наличии / в пути
+          Мини-анкета
         </div>
       </div>
       <p class="tagline">
-        Актуальные варианты из Южной Кореи под заказ!
+        Актуальные варианты из Южной Кореи под заказ!  
+        Выберите вкладку: подбор авто или авто запчастей.
       </p>
     </header>
 
-    <section class="filters-bar">
-      <div class="chips">
-        <button class="chip active" data-filter="all">
-          <span class="dot"></span>Все
-        </button>
-        <button class="chip" data-filter="sedan">
-          <span class="dot"></span>Седаны
-        </button>
-        <button class="chip" data-filter="suv">
-          <span class="dot"></span>SUV / кроссоверы
-        </button>
-        <button class="chip" data-filter="mpv">
-          <span class="dot"></span>Минивэны
-        </button>
-        <button class="chip" data-filter="ev">
-          <span class="dot"></span>Электро
-        </button>
+    <main>
+      <div class="tabs">
+        <button class="tab active" data-tab="car">Подбор авто</button>
+        <button class="tab" data-tab="parts">Авто запчасти</button>
       </div>
-      <div class="small-note">
-        Статусы «в наличии в Корее», «в пути», «под бронь». Проданные авто — как кейсы клиентов.
-      </div>
-    </section>
 
-    <main id="cards" class="grid"></main>
+      <form id="leadForm">
+        <!-- Вкладка: Подбор авто -->
+        <div class="tab-panel active" id="tab-car">
+          <div class="field-group">
+            <label for="carBrand">
+              Марка и модель<span class="required-dot">*</span>
+            </label>
+            <input
+              type="text"
+              id="carBrand"
+              placeholder="Например: Genesis GV80, Kia Carnival, BMW 520i"
+            />
+          </div>
 
-    <p class="footnote">
-      * Цены ориентировочные «под ключ» для РФ с учётом доставки из Кореи.  
-      * Мощность в ПТС может отличаться от корейских л.с. и зависит от схемы оформления.  
-      * Для точного расчёта, VIN и индивидуального подбора — напишите в бота
-      @abazaprosecbot.
-    </p>
+          <div class="two-cols">
+            <div class="field-group">
+              <label for="carYear">
+                Год выпуска (от / до)<span class="required-dot">*</span>
+              </label>
+              <input
+                type="text"
+                id="carYear"
+                placeholder="Например: от 2020 или 2021–2023"
+              />
+            </div>
+            <div class="field-group">
+              <label for="carMileage">
+                Пробег, км<span class="required-dot">*</span>
+              </label>
+              <input
+                type="text"
+                id="carMileage"
+                placeholder="Например: до 80 000 км"
+              />
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label>Топливо<span class="required-dot">*</span></label>
+            <div class="fuel-options" id="fuelOptions">
+              <button type="button" class="fuel-chip active" data-fuel="Дизель">
+                Дизель
+              </button>
+              <button type="button" class="fuel-chip" data-fuel="Бензин">
+                Бензин
+              </button>
+              <button type="button" class="fuel-chip" data-fuel="Гибрид">
+                Гибрид
+              </button>
+              <button type="button" class="fuel-chip" data-fuel="Электричка">
+                Электричка
+              </button>
+              <button type="button" class="fuel-chip" data-fuel="Газ">
+                Газ
+              </button>
+            </div>
+          </div>
+
+          <div class="two-cols">
+            <div class="field-group">
+              <label for="carRegion">
+                Регион получения авто<span class="required-dot">*</span>
+              </label>
+              <input
+                type="text"
+                id="carRegion"
+                placeholder="Москва, Краснодар, Владивосток, другой"
+              />
+            </div>
+            <div class="field-group">
+              <label for="carBudget">
+                Бюджет, ₽<span class="required-dot">*</span>
+              </label>
+              <input
+                type="text"
+                id="carBudget"
+                placeholder="Например: до 3 500 000 ₽"
+              />
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="carComment">
+              Дополнительно (VIN, комплектация, цвет)
+            </label>
+            <textarea
+              id="carComment"
+              placeholder="Напишите VIN (если есть), желаемую комплектацию, цвет, сроки…"
+            ></textarea>
+            <div class="hint">
+              Контакт для связи менеджер возьмёт из вашего профиля телеграм или уточнит в диалоге.
+            </div>
+          </div>
+        </div>
+
+        <!-- Вкладка: Авто запчасти -->
+        <div class="tab-panel" id="tab-parts">
+          <div class="field-group">
+            <label for="partsBrand">
+              Марка и модель авто<span class="required-dot">*</span>
+            </label>
+            <input
+              type="text"
+              id="partsBrand"
+              placeholder="Например: Kia Carnival 2.2D, Hyundai Solaris"
+            />
+          </div>
+
+          <div class="two-cols">
+            <div class="field-group">
+              <label for="partsYear">
+                Год выпуска<span class="required-dot">*</span>
+              </label>
+              <input
+                type="text"
+                id="partsYear"
+                placeholder="Например: 2018"
+              />
+            </div>
+            <div class="field-group">
+              <label for="partsVin">
+                VIN (если есть)
+              </label>
+              <input
+                type="text"
+                id="partsVin"
+                placeholder="Например: XW8ZZZ..."
+              />
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="partsNeed">
+              Что нужно (название запчасти / узла)<span class="required-dot">*</span>
+            </label>
+            <input
+              type="text"
+              id="partsNeed"
+              placeholder="Например: передний бампер, левая фара, контрактный двигатель"
+            />
+          </div>
+
+          <div class="field-group">
+            <label for="partsNumber">
+              Оригинальный номер / артикул (если есть)
+            </label>
+            <input
+              type="text"
+              id="partsNumber"
+              placeholder="Например: 92101-S000, 28113-5H000"
+            />
+          </div>
+
+          <div class="two-cols">
+            <div class="field-group">
+              <label for="partsRegion">
+                Регион / город доставки<span class="required-dot">*</span>
+              </label>
+              <input
+                type="text"
+                id="partsRegion"
+                placeholder="Москва, Краснодар, Владивосток, другой"
+              />
+            </div>
+            <div class="field-group">
+              <label for="partsBudget">
+                Бюджет, ₽ (если есть)
+              </label>
+              <input
+                type="text"
+                id="partsBudget"
+                placeholder="Например: до 50 000 ₽"
+              />
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="partsComment">
+              Дополнительно (фото, срочность, пожелания)
+            </label>
+            <textarea
+              id="partsComment"
+              placeholder="Напишите всё, что важно: сторона, цвет, есть ли фото детали, срочность…"
+            ></textarea>
+            <div class="hint">
+              Фото самой детали можно будет прислать уже в диалоге с менеджером.
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn">
+          Отправить
+        </button>
+
+        <div id="formMessage" class="form-message"></div>
+      </form>
+
+      <p class="footnote">
+        Отправляя заявку, вы соглашаетесь с обработкой данных для подбора автомобиля или запчастей и обратной связи.  
+        Менеджер свяжется с вами из бота @abazaprosecbot.
+      </p>
+    </main>
   </div>
 
   <script>
@@ -442,171 +525,184 @@
       tg.ready();
     }
 
-    // Бот для связи с менеджером
     const BOT_USERNAME = "abazaprosecbot";
 
-    // ТВОИ РЕАЛЬНЫЕ АВТО (пример — можно править / заменять)
-    const cars = [
-      {
-        id: "gv80_white_2023",
-        type: "suv",
-        available: true,
-        statusLabel: "В наличии в Корее",
-        hot: true,
-        title: "Genesis GV80 3.0D 4WD Luxury",
-        year: 2023,
-        power_kr: "278 л.с.",
-        power_ru: "249 л.с. в ПТС (льготная)",
-        engine: "3.0 дизель · полный привод · автомат",
-        mileage: "32 000 км",
-        route: "Корея → Владивосток → Москва / Краснодар",
-        price: "5 650 000 ₽",
-        price_note: "ориентир под ключ в РФ",
-        img: "https://images.pexels.com/photos/97079/pexels-photo-97079.jpeg"
-      },
-      {
-        id: "carnival_2022_black",
-        type: "mpv",
-        available: true,
-        statusLabel: "В пути в РФ",
-        hot: false,
-        title: "Kia Carnival 2.2D Prestige 8 мест",
-        year: 2022,
-        power_kr: "202 л.с.",
-        power_ru: "199–200 л.с. в ПТС",
-        engine: "2.2 дизель · автомат · передний привод",
-        mileage: "58 000 км",
-        route: "Корея → Владивосток (RO-RO) → Москва",
-        price: "3 690 000 ₽",
-        price_note: "ориентировочно под ключ",
-        img: "https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg"
-      },
-      {
-        id: "bmw_520i_2025_m",
-        type: "sedan",
-        available: true,
-        statusLabel: "Под бронь",
-        hot: true,
-        title: "BMW 520i M Sport (G60)",
-        year: 2025,
-        power_kr: "190 л.с.",
-        power_ru: "249 л.с. в ПТС",
-        engine: "2.0 бензин · автомат · задний привод",
-        mileage: "до 20 000 км",
-        route: "Корея → Владивосток → Москва",
-        price: "4 250 000 ₽",
-        price_note: "с ориентировочной растаможкой",
-        img: "https://images.pexels.com/photos/1402787/pexels-photo-1402787.jpeg"
-      },
-      {
-        id: "ioniq5_2024_long",
-        type: "ev",
-        available: false,
-        statusLabel: "Продано · кейс клиента",
-        hot: false,
-        title: "Hyundai IONIQ 5 Long Range AWD",
-        year: 2024,
-        power_kr: "325 л.с.",
-        power_ru: "электро, оформление по ЕАЭС",
-        engine: "Электро · полный привод",
-        mileage: "18 000 км",
-        route: "Корея → РФ / ЕАЭС",
-        price: "3 190 000 ₽",
-        price_note: "реальный кейс поставки",
-        img: "https://images.pexels.com/photos/1025469/pexels-photo-1025469.jpeg"
-      }
-    ];
+    // Табы
+    let activeTab = "car";
+    const tabButtons = document.querySelectorAll(".tab");
+    const tabPanels = {
+      car: document.getElementById("tab-car"),
+      parts: document.getElementById("tab-parts"),
+    };
 
-    function createCard(car) {
-      const card = document.createElement("article");
-      card.className = "card";
-      if (!car.available) {
-        card.classList.add("sold");
-      }
+    tabButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const tab = btn.dataset.tab;
+        if (tab === activeTab) return;
 
-      card.innerHTML = `
-        <div class="card-header">
-          <div class="title-block">
-            <div class="title-main">${car.title}</div>
-            <div class="title-meta">${car.year} · ${car.engine}</div>
-          </div>
-          <div>
-            <div class="badge ${car.hot ? "hot" : ""}">
-              ${car.hot ? "Хит запроса" : "Корейский рынок"}
-            </div>
-            <div class="badge ${!car.available ? "sold" : ""}" style="margin-top:4px;">
-              ${car.statusLabel}
-            </div>
-          </div>
-        </div>
+        activeTab = tab;
+        tabButtons.forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
 
-        <div class="media-wrap">
-          <img src="${car.img}" alt="${car.title}" loading="lazy" />
-          <div class="media-label">${car.route}</div>
-        </div>
+        Object.keys(tabPanels).forEach((key) => {
+          tabPanels[key].classList.toggle("active", key === activeTab);
+        });
 
-        <div class="rows">
-          <div class="row">
-            <div class="pill power-pill">Корейская мощность: ${car.power_kr}</div>
-            <div class="pill power-pill">Ожидаемая в ПТС РФ: ${car.power_ru}</div>
-          </div>
-          <div class="row">
-            <div class="pill">Пробег: ${car.mileage}</div>
-          </div>
-        </div>
-
-        <div class="price-row">
-          <div class="price-main">${car.price}</div>
-          <div class="price-sub">${car.price_note}</div>
-        </div>
-
-        <button class="btn" data-id="${car.id}">
-          Хочу расчет и проверку авто
-        </button>
-      `;
-
-      const btn = card.querySelector(".btn");
-      btn.addEventListener("click", () => handleSelectCar(car));
-
-      return card;
-    }
-
-    function renderCards(filter = "all") {
-      const container = document.getElementById("cards");
-      container.innerHTML = "";
-
-      const filtered =
-        filter === "all" ? cars : cars.filter((c) => c.type === filter);
-
-      filtered.forEach((car) => {
-        container.appendChild(createCard(car));
-      });
-    }
-
-    function handleSelectCar(car) {
-      const prefix = car.available ? "car_" : "case_";
-      const startParam = encodeURIComponent(prefix + car.id);
-      const url = `https://t.me/${BOT_USERNAME}?start=${startParam}`;
-
-      if (tg && tg.initDataUnsafe) {
-        window.location.href = url;
-      } else {
-        window.open(url, "_blank");
-      }
-    }
-
-    document.querySelectorAll(".chip").forEach((chip) => {
-      chip.addEventListener("click", () => {
-        document
-          .querySelectorAll(".chip")
-          .forEach((c) => c.classList.remove("active"));
-        chip.classList.add("active");
-        const filter = chip.dataset.filter;
-        renderCards(filter);
+        formMessage.textContent = "";
+        formMessage.classList.remove("error");
       });
     });
 
-    renderCards("all");
+    // Топливо — выбор
+    let selectedFuel = "Дизель";
+    const fuelButtons = document.querySelectorAll(".fuel-chip");
+
+    fuelButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        fuelButtons.forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        selectedFuel = btn.dataset.fuel;
+      });
+    });
+
+    const form = document.getElementById("leadForm");
+    const formMessage = document.getElementById("formMessage");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      formMessage.textContent = "";
+      formMessage.classList.remove("error");
+
+      if (activeTab === "car") {
+        await handleCarSubmit();
+      } else {
+        await handlePartsSubmit();
+      }
+    });
+
+    async function handleCarSubmit() {
+      const brand = document.getElementById("carBrand").value.trim();
+      const year = document.getElementById("carYear").value.trim();
+      const mileage = document.getElementById("carMileage").value.trim();
+      const region = document.getElementById("carRegion").value.trim();
+      const budget = document.getElementById("carBudget").value.trim();
+      const comment = document.getElementById("carComment").value.trim();
+
+      if (!brand || !year || !mileage || !region || !budget || !selectedFuel) {
+        formMessage.textContent = "Пожалуйста, заполните все обязательные поля для подбора авто.";
+        formMessage.classList.add("error");
+        return;
+      }
+
+      const payload = {
+        source: "miniapp_avtobaza_form_car",
+        type: "car",
+        brand,
+        year,
+        mileage,
+        fuel: selectedFuel,
+        region,
+        budget,
+        comment,
+        createdAt: new Date().toISOString(),
+      };
+
+      const textPreview =
+        "Заявка на подбор автомобиля из мини-приложения:\n\n" +
+        `Марка и модель: ${brand}\n` +
+        `Год: ${year}\n` +
+        `Пробег: ${mileage}\n` +
+        `Топливо: ${selectedFuel}\n` +
+        `Регион получения авто: ${region}\n` +
+        `Бюджет: ${budget}\n` +
+        (comment ? `Комментарий: ${comment}\n` : "");
+
+      await sendPayload(payload, textPreview);
+    }
+
+    async function handlePartsSubmit() {
+      const brand = document.getElementById("partsBrand").value.trim();
+      const year = document.getElementById("partsYear").value.trim();
+      const vin = document.getElementById("partsVin").value.trim();
+      const need = document.getElementById("partsNeed").value.trim();
+      const number = document.getElementById("partsNumber").value.trim();
+      const region = document.getElementById("partsRegion").value.trim();
+      const budget = document.getElementById("partsBudget").value.trim();
+      const comment = document.getElementById("partsComment").value.trim();
+
+      if (!brand || !year || !need || !region) {
+        formMessage.textContent =
+          "Пожалуйста, заполните обязательные поля для заявки по авто запчастям (марка/модель, год, что нужно, регион).";
+        formMessage.classList.add("error");
+        return;
+      }
+
+      const payload = {
+        source: "miniapp_avtobaza_form_parts",
+        type: "parts",
+        brand,
+        year,
+        vin,
+        need,
+        number,
+        region,
+        budget,
+        comment,
+        createdAt: new Date().toISOString(),
+      };
+
+      const textPreview =
+        "Заявка на авто запчасти из мини-приложения:\n\n" +
+        `Марка и модель авто: ${brand}\n` +
+        `Год: ${year}\n` +
+        (vin ? `VIN: ${vin}\n` : "") +
+        `Что нужно: ${need}\n` +
+        (number ? `Номер детали / артикул: ${number}\n` : "") +
+        `Регион / город: ${region}\n` +
+        (budget ? `Бюджет: ${budget}\n` : "") +
+        (comment ? `Комментарий: ${comment}\n` : "");
+
+      await sendPayload(payload, textPreview);
+    }
+
+    async function sendPayload(payload, textPreview) {
+      try {
+        if (tg && tg.sendData) {
+          tg.sendData(JSON.stringify(payload));
+          formMessage.textContent =
+            "Заявка отправлена менеджеру. Ожидайте сообщение из @abazaprosecbot.";
+          form.reset();
+          // восстановим дефолтное топливо и активный чип
+          selectedFuel = "Дизель";
+          fuelButtons.forEach((b) => b.classList.remove("active"));
+          const firstFuel = document.querySelector('.fuel-chip[data-fuel="Дизель"]');
+          if (firstFuel) firstFuel.classList.add("active");
+        } else {
+          // если открыто НЕ внутри Telegram (браузер)
+          const url = `https://t.me/${BOT_USERNAME}`;
+          if (navigator.clipboard) {
+            await navigator.clipboard.writeText(textPreview);
+            formMessage.textContent =
+              "Заявка сформирована и скопирована в буфер обмена.\n" +
+              "Откройте чат с @" +
+              BOT_USERNAME +
+              " и вставьте заявку.";
+          } else {
+            formMessage.textContent =
+              "Скопируйте текст заявки и отправьте его в чат с @" +
+              BOT_USERNAME +
+              ":\n\n" +
+              textPreview;
+          }
+          form.reset();
+        }
+      } catch (err) {
+        console.error(err);
+        formMessage.textContent =
+          "Что-то пошло не так при отправке. Попробуйте ещё раз или напишите напрямую в @abazaprosecbot.";
+        formMessage.classList.add("error");
+      }
+    }
   </script>
 </body>
 </html>
