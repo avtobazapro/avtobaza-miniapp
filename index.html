@@ -13,30 +13,26 @@
       --bg: #020617;
       --card-bg: #020617;
       --card-border: rgba(148, 163, 184, 0.18);
-      --accent: #38bdf8;
-      --accent-soft: rgba(56, 189, 248, 0.15);
+      --accent: #2aabee; /* Телеграм-голубой */
+      --accent-soft: rgba(42, 171, 238, 0.18);
       --text-main: #e5e7eb;
       --text-soft: #9ca3af;
       --price: #fbbf24;
-      --danger: #f97373;
       --radius-xl: 22px;
-      --shadow-soft: 0 24px 60px rgba(15, 23, 42, 0.9);
+      --shadow-soft: 0 24px 60px rgba(0, 0, 0, 0.9);
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, system-ui, "SF Pro Text",
-        "Segoe UI", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, system-ui,
+        "SF Pro Text", "SF Pro Display", "Segoe UI", sans-serif;
     }
 
     body {
       min-height: 100vh;
-      background:
-        radial-gradient(circle at top left, rgba(148, 163, 184, 0.16), transparent 55%),
-        radial-gradient(circle at bottom right, rgba(56, 189, 248, 0.22), transparent 60%),
-        var(--bg);
+      background: radial-gradient(circle at top, #020617 0, #000 70%);
       color: var(--text-main);
       padding: 18px 12px 24px;
       display: flex;
@@ -46,15 +42,10 @@
     .shell {
       width: 100%;
       max-width: 980px;
-      backdrop-filter: blur(22px);
-      background: linear-gradient(
-        135deg,
-        rgba(15, 23, 42, 0.94),
-        rgba(15, 23, 42, 0.96),
-        rgba(15, 23, 42, 0.98)
-      );
+      backdrop-filter: blur(26px);
+      background: rgba(6, 10, 22, 0.98);
       border-radius: 30px;
-      border: 1px solid rgba(148, 163, 184, 0.35);
+      border: 1px solid rgba(31, 41, 55, 0.9);
       box-shadow: var(--shadow-soft);
       padding: 18px 16px 18px;
     }
@@ -82,15 +73,15 @@
 
     .logo-word {
       display: flex;
-      align-items: baseline;
-      gap: 6px;
+      flex-direction: column;
+      gap: 3px;
     }
 
     .logo-main {
       font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      font-size: 14px;
+      font-size: 13px;
       color: var(--accent);
     }
 
@@ -116,6 +107,7 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      background: rgba(15, 23, 42, 0.9);
     }
 
     .status-pill-dot {
@@ -146,7 +138,7 @@
       padding: 6px 12px;
       border-radius: 999px;
       border: 1px solid rgba(55, 65, 81, 0.9);
-      background: rgba(15, 23, 42, 0.9);
+      background: rgba(15, 23, 42, 0.96);
       font-size: 12px;
       cursor: pointer;
       color: var(--text-soft);
@@ -214,7 +206,7 @@
       inset: 0;
       background: radial-gradient(
         circle at top right,
-        rgba(56, 189, 248, 0.08),
+        rgba(42, 171, 238, 0.14),
         transparent 60%
       );
       opacity: 0;
@@ -227,7 +219,7 @@
     }
 
     .card.sold {
-      opacity: 0.65;
+      opacity: 0.6;
       filter: grayscale(0.2);
     }
 
@@ -262,12 +254,13 @@
       border: 1px solid rgba(148, 163, 184, 0.5);
       color: var(--text-soft);
       white-space: nowrap;
+      text-align: right;
     }
 
     .badge.hot {
       border-color: var(--accent);
       color: var(--accent);
-      background: rgba(15, 23, 42, 0.7);
+      background: rgba(15, 23, 42, 0.9);
     }
 
     .badge.sold {
@@ -280,7 +273,7 @@
       overflow: hidden;
       aspect-ratio: 16 / 9;
       margin-top: 6px;
-      background: radial-gradient(circle at top, #1f2937, #020617);
+      background: radial-gradient(circle at top, #020617, #020617);
       position: relative;
     }
 
@@ -304,7 +297,7 @@
       padding: 3px 8px;
       font-size: 10px;
       border-radius: 999px;
-      background: rgba(15, 23, 42, 0.78);
+      background: rgba(15, 23, 42, 0.86);
       color: var(--text-soft);
       border: 1px solid rgba(148, 163, 184, 0.6);
       backdrop-filter: blur(10px);
@@ -368,21 +361,21 @@
       justify-content: center;
       gap: 6px;
       cursor: pointer;
-      background: radial-gradient(circle at top left, #22c55e, #15803d);
+      background: linear-gradient(135deg, #3ba5e6, #1e96c8); /* Telegram-style */
       color: #f9fafb;
-      box-shadow: 0 14px 30px rgba(22, 163, 74, 0.55);
+      box-shadow: 0 14px 30px rgba(59, 165, 230, 0.65);
       width: 100%;
       transition: transform 0.08s ease, box-shadow 0.08s ease;
     }
 
     .btn:hover {
       transform: translateY(-1px);
-      box-shadow: 0 18px 36px rgba(22, 163, 74, 0.7);
+      box-shadow: 0 18px 36px rgba(59, 165, 230, 0.8);
     }
 
     .btn:active {
       transform: translateY(0);
-      box-shadow: 0 10px 18px rgba(22, 163, 74, 0.45);
+      box-shadow: 0 10px 18px rgba(59, 165, 230, 0.5);
     }
 
     .btn-icon {
@@ -411,9 +404,8 @@
         </div>
       </div>
       <p class="tagline">
-        Актуальные автомобили из Южной Кореи под заказ.  
-        Выбирай авто в стиле Apple / Genesis — дальше всё продолжим в чате с
-        @avtobaza_pro_bot.
+        Актуальные автомобили из Южной Кореи под заказ и в наличии.  
+        Выбери авто — и мы продолжим общение с менеджером в @abazaprosecbot.
       </p>
     </header>
 
@@ -436,7 +428,7 @@
         </button>
       </div>
       <div class="small-note">
-        Статус: «в наличии в Корее», «в пути» или «под бронь». Проданные авто подсвечены бледнее.
+        Статусы «в наличии в Корее», «в пути», «под бронь». Проданные авто — как кейс, подсвечены бледнее.
       </div>
     </section>
 
@@ -446,7 +438,7 @@
       * Цены ориентировочные «под ключ» для РФ с учётом доставки из Кореи.  
       * Мощность в ПТС может отличаться от корейских л.с. и зависит от схемы оформления.  
       * Для точного расчёта, VIN и индивидуального подбора — напишите в бота
-      @avtobaza_pro_bot.
+      @abazaprosecbot.
     </p>
   </div>
 
@@ -457,26 +449,10 @@
       tg.ready();
     }
 
-    const BOT_USERNAME = "avtobaza_pro_bot";
+    // 🔻 ТЕПЕРЬ ИСПОЛЬЗУЕМ БОТА ДЛЯ СВЯЗИ С МЕНЕДЖЕРОМ
+    const BOT_USERNAME = "abazaprosecbot";
 
-    // 🔻 ВАЖНО: здесь ты подставляешь СВОИ РЕАЛЬНЫЕ АВТО 🔻
-    // Поля:
-    // id          — уникальный идентификатор
-    // type        — "sedan" | "suv" | "mpv" | "ev"
-    // available   — true (в работе) / false (продано, можно показывать как кейс)
-    // statusLabel — короткий статус на карточке
-    // title       — модель
-    // year        — год
-    // power_kr    — л.с. по корейским документам
-    // power_ru    — как будет в ПТС РФ (если знаешь)
-    // engine      — мотор + коробка
-    // mileage     — пробег
-    // route       — логистика
-    // price       — цена под ключ / ориентир
-    // price_note  — уточнение по цене
-    // img         — ссылка на фото (можно из Telegram Web, Google Drive с прямой ссылкой
-    //               или твои хостинги картинок)
-
+    // 🔻 ЗДЕСЬ ТВОИ РЕАЛЬНЫЕ АВТО
     const cars = [
       {
         id: "gv80_white_2023",
@@ -507,7 +483,7 @@
         power_ru: "199–200 л.с. в ПТС",
         engine: "2.2 дизель · автомат · передний привод",
         mileage: "58 000 км",
-        route: "Корея → Владивосток (корабль) → Москва",
+        route: "Корея → Владивосток (RO-RO) → Москва",
         price: "3 690 000 ₽",
         price_note: "ориентировочно под ключ",
         img: "https://images.pexels.com/photos/112460/pexels-photo-112460.jpeg"
@@ -532,7 +508,7 @@
       {
         id: "ioniq5_2024_long",
         type: "ev",
-        available: false, // пример проданного авто
+        available: false,
         statusLabel: "Продано · кейс клиента",
         hot: false,
         title: "Hyundai IONIQ 5 Long Range AWD",
@@ -547,7 +523,7 @@
         img: "https://images.pexels.com/photos/1025469/pexels-photo-1025469.jpeg"
       }
     ];
-    // 🔺 КОНЕЦ БЛОКА С ТВОИМИ АВТО 🔺
+    // 🔺 ЗАМЕНИ ЭТИ ОБЪЕКТЫ НА СВОИ РЕАЛЬНЫЕ АВТО 🔺
 
     function createCard(car) {
       const card = document.createElement("article");
@@ -594,7 +570,7 @@
 
         <button class="btn" data-id="${car.id}">
           <span class="btn-icon">🚗</span>
-          <span>${car.available ? "Хочу расчёт и проверку авто" : "Хочу такое же авто"}</span>
+          <span>Хочу расчёт и проверку авто</span>
         </button>
       `;
 
