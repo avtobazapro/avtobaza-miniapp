@@ -315,11 +315,11 @@
       </div>
 
       <form id="leadForm">
-        <!-- Вкладка: Подбор авто -->
+        <!-- Вкладка: Подбор авто (всё НЕобязательно) -->
         <div class="tab-panel active" id="tab-car">
           <div class="field-group">
             <label for="carBrand">
-              Марка и модель<span class="required-dot">*</span>
+              Марка и модель
             </label>
             <input
               type="text"
@@ -331,7 +331,7 @@
           <div class="two-cols">
             <div class="field-group">
               <label for="carYear">
-                Год выпуска (от / до)<span class="required-dot">*</span>
+                Год выпуска (от / до)
               </label>
               <input
                 type="text"
@@ -341,7 +341,7 @@
             </div>
             <div class="field-group">
               <label for="carMileage">
-                Пробег, км<span class="required-dot">*</span>
+                Пробег, км
               </label>
               <input
                 type="text"
@@ -352,7 +352,7 @@
           </div>
 
           <div class="field-group">
-            <label>Топливо<span class="required-dot">*</span></label>
+            <label>Топливо</label>
             <div class="fuel-options" id="fuelOptions">
               <button type="button" class="fuel-chip active" data-fuel="Дизель">
                 Дизель
@@ -375,7 +375,7 @@
           <div class="two-cols">
             <div class="field-group">
               <label for="carRegion">
-                Регион получения авто<span class="required-dot">*</span>
+                Регион получения авто
               </label>
               <input
                 type="text"
@@ -385,7 +385,7 @@
             </div>
             <div class="field-group">
               <label for="carBudget">
-                Бюджет, ₽<span class="required-dot">*</span>
+                Бюджет, ₽
               </label>
               <input
                 type="text"
@@ -409,11 +409,11 @@
           </div>
         </div>
 
-        <!-- Вкладка: Авто запчасти -->
+        <!-- Вкладка: Авто запчасти (ТОЖЕ всё НЕобязательно) -->
         <div class="tab-panel" id="tab-parts">
           <div class="field-group">
             <label for="partsBrand">
-              Марка и модель авто<span class="required-dot">*</span>
+              Марка и модель авто
             </label>
             <input
               type="text"
@@ -425,7 +425,7 @@
           <div class="two-cols">
             <div class="field-group">
               <label for="partsYear">
-                Год выпуска<span class="required-dot">*</span>
+                Год выпуска
               </label>
               <input
                 type="text"
@@ -447,7 +447,7 @@
 
           <div class="field-group">
             <label for="partsNeed">
-              Что нужно (название запчасти / узла)<span class="required-dot">*</span>
+              Что нужно (название запчасти / узла)
             </label>
             <input
               type="text"
@@ -470,7 +470,7 @@
           <div class="two-cols">
             <div class="field-group">
               <label for="partsRegion">
-                Регион / город доставки<span class="required-dot">*</span>
+                Регион / город доставки
               </label>
               <input
                 type="text"
@@ -499,7 +499,7 @@
               placeholder="Напишите всё, что важно: сторона, цвет, есть ли фото детали, срочность…"
             ></textarea>
             <div class="hint">
-              Фото самой детали можно будет прислать уже в диалоге с менеджером.
+              Фото детали можно будет прислать уже в диалоге с менеджером.
             </div>
           </div>
         </div>
@@ -580,6 +580,7 @@
       }
     });
 
+    // Вкладка "Подбор авто" — всё опционально
     async function handleCarSubmit() {
       const brand = document.getElementById("carBrand").value.trim();
       const year = document.getElementById("carYear").value.trim();
@@ -588,10 +589,9 @@
       const budget = document.getElementById("carBudget").value.trim();
       const comment = document.getElementById("carComment").value.trim();
 
-      if (!brand || !year || !mileage || !region || !budget || !selectedFuel) {
-        formMessage.textContent = "Пожалуйста, заполните все обязательные поля для подбора авто.";
-        formMessage.classList.add("error");
-        return;
+      if (!brand && !year && !mileage && !region && !budget && !comment) {
+        formMessage.textContent =
+          "Вы можете отправить и пустую форму, но лучше заполните хотя бы один параметр для подбора 😊";
       }
 
       const payload = {
@@ -609,17 +609,21 @@
 
       const textPreview =
         "Заявка на подбор автомобиля из мини-приложения:\n\n" +
-        `Марка и модель: ${brand}\n` +
-        `Год: ${year}\n` +
-        `Пробег: ${mileage}\n` +
+        (brand ? `Марка и модель: ${brand}\n` : "") +
+        (year ? `Год: ${year}\n` : "") +
+        (mileage ? `Пробег: ${mileage}\n` : "") +
         `Топливо: ${selectedFuel}\n` +
-        `Регион получения авто: ${region}\n` +
-        `Бюджет: ${budget}\n` +
+        (region ? `Регион получения авто: ${region}\n` : "") +
+        (budget ? `Бюджет: ${budget}\n` : "") +
         (comment ? `Комментарий: ${comment}\n` : "");
 
-      await sendPayload(payload, textPreview);
+      await sendPayload(
+        payload,
+        textPreview || "Заявка на подбор авто (клиент не заполнил поля)."
+      );
     }
 
+    // Вкладка "Авто запчасти" — тоже всё опционально
     async function handlePartsSubmit() {
       const brand = document.getElementById("partsBrand").value.trim();
       const year = document.getElementById("partsYear").value.trim();
@@ -630,11 +634,18 @@
       const budget = document.getElementById("partsBudget").value.trim();
       const comment = document.getElementById("partsComment").value.trim();
 
-      if (!brand || !year || !need || !region) {
+      if (
+        !brand &&
+        !year &&
+        !vin &&
+        !need &&
+        !number &&
+        !region &&
+        !budget &&
+        !comment
+      ) {
         formMessage.textContent =
-          "Пожалуйста, заполните обязательные поля для заявки по авто запчастям (марка/модель, год, что нужно, регион).";
-        formMessage.classList.add("error");
-        return;
+          "Вы можете отправить и пустую форму, но для подбора запчастей лучше указать хотя бы марку авто или что нужно 😊";
       }
 
       const payload = {
@@ -653,53 +664,50 @@
 
       const textPreview =
         "Заявка на авто запчасти из мини-приложения:\n\n" +
-        `Марка и модель авто: ${brand}\n` +
-        `Год: ${year}\n` +
+        (brand ? `Марка и модель авто: ${brand}\n` : "") +
+        (year ? `Год: ${year}\n` : "") +
         (vin ? `VIN: ${vin}\n` : "") +
-        `Что нужно: ${need}\n` +
+        (need ? `Что нужно: ${need}\n` : "") +
         (number ? `Номер детали / артикул: ${number}\n` : "") +
-        `Регион / город: ${region}\n` +
+        (region ? `Регион / город: ${region}\n` : "") +
         (budget ? `Бюджет: ${budget}\n` : "") +
         (comment ? `Комментарий: ${comment}\n` : "");
 
-      await sendPayload(payload, textPreview);
+      await sendPayload(
+        payload,
+        textPreview || "Заявка на авто запчасти (клиент не заполнил поля)."
+      );
     }
 
+    // Открываем чат с @abazaprosecbot и подставляем текст заявки как черновик
     async function sendPayload(payload, textPreview) {
       try {
-        if (tg && tg.sendData) {
-          tg.sendData(JSON.stringify(payload));
-          formMessage.textContent =
-            "Заявка отправлена менеджеру. Ожидайте сообщение из @abazaprosecbot.";
-          form.reset();
-          // восстановим дефолтное топливо и активный чип
-          selectedFuel = "Дизель";
-          fuelButtons.forEach((b) => b.classList.remove("active"));
-          const firstFuel = document.querySelector('.fuel-chip[data-fuel="Дизель"]');
-          if (firstFuel) firstFuel.classList.add("active");
-        } else {
-          // если открыто НЕ внутри Telegram (браузер)
-          const url = `https://t.me/${BOT_USERNAME}`;
-          if (navigator.clipboard) {
-            await navigator.clipboard.writeText(textPreview);
-            formMessage.textContent =
-              "Заявка сформирована и скопирована в буфер обмена.\n" +
-              "Откройте чат с @" +
-              BOT_USERNAME +
-              " и вставьте заявку.";
-          } else {
-            formMessage.textContent =
-              "Скопируйте текст заявки и отправьте его в чат с @" +
-              BOT_USERNAME +
-              ":\n\n" +
-              textPreview;
-          }
-          form.reset();
-        }
+        const deepLink =
+          "https://t.me/" +
+          BOT_USERNAME +
+          "?text=" +
+          encodeURIComponent(textPreview);
+
+        window.location.href = deepLink;
+
+        formMessage.textContent =
+          "Мы открыли чат с @" +
+          BOT_USERNAME +
+          ". Заявка уже вставлена в поле ввода — осталось только нажать «Отправить».";
+
+        form.reset();
+
+        // сброс топлива на дефолт
+        selectedFuel = "Дизель";
+        fuelButtons.forEach((b) => b.classList.remove("active"));
+        const firstFuel = document.querySelector(
+          '.fuel-chip[data-fuel="Дизель"]'
+        );
+        if (firstFuel) firstFuel.classList.add("active");
       } catch (err) {
         console.error(err);
         formMessage.textContent =
-          "Что-то пошло не так при отправке. Попробуйте ещё раз или напишите напрямую в @abazaprosecbot.";
+          "Не удалось открыть чат. Откройте @abazaprosecbot вручную и напишите заявку в свободной форме.";
         formMessage.classList.add("error");
       }
     }
