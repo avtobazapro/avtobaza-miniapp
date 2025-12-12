@@ -175,11 +175,6 @@
       color: var(--text-soft);
     }
 
-    .required-dot {
-      color: #ef4444;
-      margin-left: 2px;
-    }
-
     input[type="text"],
     textarea {
       width: 100%;
@@ -295,7 +290,7 @@
       <div class="brand-row">
         <div class="logo-word">
           <div class="logo-main">АвтоБаза.PRO</div>
-          <div class="logo-sub">Korea · Premium · Genesis Class</div>
+          <div class="logo-sub">Korea · Premium</div>
         </div>
         <div class="status-pill">
           <span class="status-pill-dot"></span>
@@ -303,8 +298,8 @@
         </div>
       </div>
       <p class="tagline">
-        Актуальные варианты из Южной Кореи под заказ!  
-        Выберите вкладку: подбор авто или авто запчастей.
+        Заказать авто из Южной Кореи | Китая | Европы  
+        Выберите вкладку: Подбор Авто или Авто запчастей.
       </p>
     </header>
 
@@ -384,15 +379,26 @@
               />
             </div>
             <div class="field-group">
-              <label for="carBudget">
-                Бюджет, ₽
+              <label for="carPhone">
+                Телефон для связи
               </label>
               <input
                 type="text"
-                id="carBudget"
-                placeholder="Например: до 3 500 000 ₽"
+                id="carPhone"
+                placeholder="Например: +7 999 123-45-67"
               />
             </div>
+          </div>
+
+          <div class="field-group">
+            <label for="carBudget">
+              Бюджет, ₽
+            </label>
+            <input
+              type="text"
+              id="carBudget"
+              placeholder="Например: до 3 500 000 ₽"
+            />
           </div>
 
           <div class="field-group">
@@ -404,12 +410,12 @@
               placeholder="Напишите VIN (если есть), желаемую комплектацию, цвет, сроки…"
             ></textarea>
             <div class="hint">
-              Контакт для связи менеджер возьмёт из вашего профиля телеграм или уточнит в диалоге.
+              Можно указать телефон или удобное время для связи — менеджер свяжется с вами в Telegram или по телефону.
             </div>
           </div>
         </div>
 
-        <!-- Вкладка: Авто запчасти (ТОЖЕ всё НЕобязательно) -->
+        <!-- Вкладка: Авто запчасти (всё НЕобязательно, вместо бюджета — телефон) -->
         <div class="tab-panel" id="tab-parts">
           <div class="field-group">
             <label for="partsBrand">
@@ -479,13 +485,13 @@
               />
             </div>
             <div class="field-group">
-              <label for="partsBudget">
-                Бюджет, ₽ (если есть)
+              <label for="partsPhone">
+                Телефон для связи
               </label>
               <input
                 type="text"
-                id="partsBudget"
-                placeholder="Например: до 50 000 ₽"
+                id="partsPhone"
+                placeholder="Например: +7 999 123-45-67"
               />
             </div>
           </div>
@@ -512,8 +518,8 @@
       </form>
 
       <p class="footnote">
-        Отправляя заявку, вы соглашаетесь с обработкой данных для подбора автомобиля или запчастей и обратной связи.  
-        Менеджер свяжется с вами из бота @abazaprosecbot.
+        Отправляя заявку, вы соглашаетесь с обработкой ваших данных для подбора автомобиля или запчастей и для обратной связи.  
+        Менеджер свяжется с вами в ближайшее время.
       </p>
     </main>
   </div>
@@ -534,6 +540,9 @@
       car: document.getElementById("tab-car"),
       parts: document.getElementById("tab-parts"),
     };
+
+    const form = document.getElementById("leadForm");
+    const formMessage = document.getElementById("formMessage");
 
     tabButtons.forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -565,9 +574,6 @@
       });
     });
 
-    const form = document.getElementById("leadForm");
-    const formMessage = document.getElementById("formMessage");
-
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       formMessage.textContent = "";
@@ -586,10 +592,11 @@
       const year = document.getElementById("carYear").value.trim();
       const mileage = document.getElementById("carMileage").value.trim();
       const region = document.getElementById("carRegion").value.trim();
+      const phone = document.getElementById("carPhone").value.trim();
       const budget = document.getElementById("carBudget").value.trim();
       const comment = document.getElementById("carComment").value.trim();
 
-      if (!brand && !year && !mileage && !region && !budget && !comment) {
+      if (!brand && !year && !mileage && !region && !phone && !budget && !comment) {
         formMessage.textContent =
           "Вы можете отправить и пустую форму, но лучше заполните хотя бы один параметр для подбора 😊";
       }
@@ -602,6 +609,7 @@
         mileage,
         fuel: selectedFuel,
         region,
+        phone,
         budget,
         comment,
         createdAt: new Date().toISOString(),
@@ -615,6 +623,7 @@
         `Топливо: ${selectedFuel}\n` +
         (region ? `Регион получения авто: ${region}\n` : "") +
         (budget ? `Бюджет: ${budget}\n` : "") +
+        (phone ? `Телефон: ${phone}\n` : "") +
         (comment ? `Комментарий: ${comment}\n` : "");
 
       await sendPayload(
@@ -623,7 +632,7 @@
       );
     }
 
-    // Вкладка "Авто запчасти" — тоже всё опционально
+    // Вкладка "Авто запчасти" — всё опционально, бюджет заменён на телефон
     async function handlePartsSubmit() {
       const brand = document.getElementById("partsBrand").value.trim();
       const year = document.getElementById("partsYear").value.trim();
@@ -631,7 +640,7 @@
       const need = document.getElementById("partsNeed").value.trim();
       const number = document.getElementById("partsNumber").value.trim();
       const region = document.getElementById("partsRegion").value.trim();
-      const budget = document.getElementById("partsBudget").value.trim();
+      const phone = document.getElementById("partsPhone").value.trim();
       const comment = document.getElementById("partsComment").value.trim();
 
       if (
@@ -641,7 +650,7 @@
         !need &&
         !number &&
         !region &&
-        !budget &&
+        !phone &&
         !comment
       ) {
         formMessage.textContent =
@@ -657,7 +666,7 @@
         need,
         number,
         region,
-        budget,
+        phone,
         comment,
         createdAt: new Date().toISOString(),
       };
@@ -670,7 +679,7 @@
         (need ? `Что нужно: ${need}\n` : "") +
         (number ? `Номер детали / артикул: ${number}\n` : "") +
         (region ? `Регион / город: ${region}\n` : "") +
-        (budget ? `Бюджет: ${budget}\n` : "") +
+        (phone ? `Телефон: ${phone}\n` : "") +
         (comment ? `Комментарий: ${comment}\n` : "");
 
       await sendPayload(
