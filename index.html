@@ -1,36 +1,34 @@
 <style>
-  :root {
-    /* Telegram theme (если откроют в Telegram с темой — подхватит цвета; иначе возьмёт фолбэки) */
-    --tg-bg: var(--tg-theme-bg-color, #0b1020);
-    --tg-text: var(--tg-theme-text-color, #e5e7eb);
-    --tg-hint: var(--tg-theme-hint-color, rgba(229, 231, 235, 0.65));
+  :root{
+    /* Telegram theme support (fallbacks) */
+    --tg-bg: var(--tg-theme-bg-color, #0a0d14);
+    --tg-text: var(--tg-theme-text-color, #e7e9ee);
+    --tg-hint: var(--tg-theme-hint-color, rgba(231,233,238,.62));
     --tg-link: var(--tg-theme-link-color, #2aabee);
 
-    /* Dark palette */
-    --bg: #0b1020;
-    --shell-bg: rgba(17, 24, 39, 0.78);
-    --shell-bg-solid: #111827;
+    /* Graphite / Glass palette */
+    --bg: #0a0d14;
+    --shell-bg: rgba(16, 18, 26, 0.58);
+    --shell-bg-2: rgba(20, 24, 38, 0.72);
 
-    --border-soft: rgba(148, 163, 184, 0.18);
-    --border-input: rgba(148, 163, 184, 0.22);
+    --border-soft: rgba(148, 163, 184, 0.14);
+    --border-input: rgba(148, 163, 184, 0.18);
 
     --text-main: var(--tg-text);
     --text-soft: var(--tg-hint);
 
-    --accent: var(--tg-link);          /* фирменный Telegram-голубой */
-    --accent-2: #22d3ee;              /* лёгкий циан для подсветок */
+    --accent: var(--tg-link);      /* голубой Telegram */
+    --accent-2: #22d3ee;          /* циан подсветка */
     --error: #fb7185;
 
-    --radius-xl: 24px;
+    --shadow-soft: 0 26px 80px rgba(0, 0, 0, 0.62);
+    --shadow-tight: 0 12px 32px rgba(0, 0, 0, 0.48);
 
-    --shadow-soft: 0 24px 70px rgba(0, 0, 0, 0.55);
-    --shadow-tight: 0 12px 30px rgba(0, 0, 0, 0.45);
+    --glass: rgba(6, 10, 18, 0.42);
+    --glass-2: rgba(6, 10, 18, 0.62);
 
-    --glass: rgba(2, 6, 23, 0.45);
-    --glass-2: rgba(2, 6, 23, 0.66);
-
-    --input-bg: rgba(2, 6, 23, 0.55);
-    --input-bg-focus: rgba(2, 6, 23, 0.82);
+    --input-bg: rgba(6, 10, 18, 0.50);
+    --input-bg-focus: rgba(6, 10, 18, 0.78);
   }
 
   * {
@@ -41,127 +39,131 @@
       "SF Pro Text", "SF Pro Display", "Segoe UI", sans-serif;
   }
 
-  body {
+  body{
     min-height: 100vh;
-    background: radial-gradient(1200px 700px at 20% 0%, rgba(42, 171, 238, 0.18), transparent 60%),
-                radial-gradient(900px 600px at 90% 20%, rgba(34, 211, 238, 0.10), transparent 55%),
-                linear-gradient(180deg, var(--tg-bg), #070a12 90%);
     color: var(--text-main);
     padding: 18px 12px 24px;
     display: flex;
     justify-content: center;
+
+    background:
+      radial-gradient(1100px 640px at 18% 0%, rgba(42,171,238,.14), transparent 60%),
+      radial-gradient(900px 560px at 88% 18%, rgba(34,211,238,.08), transparent 58%),
+      radial-gradient(700px 500px at 50% 110%, rgba(148,163,184,.06), transparent 55%),
+      linear-gradient(180deg, var(--tg-bg), #06070c 92%);
   }
 
-  .shell {
+  .shell{
     width: 100%;
     max-width: 580px;
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    background: linear-gradient(180deg, var(--shell-bg), rgba(17, 24, 39, 0.62));
+    padding: 18px 16px 18px;
     border-radius: 28px;
     border: 1px solid var(--border-soft);
     box-shadow: var(--shadow-soft);
-    padding: 18px 16px 18px;
+
+    background: linear-gradient(180deg, var(--shell-bg), var(--shell-bg-2));
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+
     position: relative;
     overflow: hidden;
   }
 
-  /* subtle inner glow */
-  .shell::before {
-    content: "";
-    position: absolute;
-    inset: -2px;
-    background: radial-gradient(600px 240px at 10% 0%, rgba(42, 171, 238, 0.14), transparent 55%),
-                radial-gradient(500px 240px at 90% 0%, rgba(34, 211, 238, 0.10), transparent 55%);
-    pointer-events: none;
+  /* glass highlight + ultra subtle texture */
+  .shell::before{
+    content:"";
+    position:absolute;
+    inset:-2px;
+    pointer-events:none;
+    background:
+      radial-gradient(700px 260px at 12% 0%, rgba(42,171,238,.12), transparent 55%),
+      radial-gradient(560px 240px at 92% 0%, rgba(34,211,238,.08), transparent 55%),
+      linear-gradient(180deg, rgba(255,255,255,.06), transparent 22%),
+      repeating-linear-gradient(
+        135deg,
+        rgba(255,255,255,.018) 0px,
+        rgba(255,255,255,.018) 1px,
+        transparent 1px,
+        transparent 10px
+      );
+    opacity: .9;
   }
 
-  .shell > * {
-    position: relative;
-    z-index: 1;
+  .shell > *{ position: relative; z-index: 1; }
+
+  @media (min-width: 768px){
+    .shell{ padding: 24px 24px 24px; margin-top: 20px; }
   }
 
-  @media (min-width: 768px) {
-    .shell {
-      padding: 24px 24px 24px;
-      margin-top: 20px;
-    }
+  .header{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    margin-bottom:14px;
   }
 
-  .header {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 14px;
+  .brand-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
   }
 
-  .brand-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-  }
+  .logo-word{ display:flex; flex-direction:column; gap:3px; }
 
-  .logo-word {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-  }
-
-  .logo-main {
-    font-weight: 750;
-    letter-spacing: 0.14em;
+  .logo-main{
+    font-weight: 760;
+    letter-spacing: .14em;
     text-transform: uppercase;
     font-size: 13px;
     color: var(--accent);
-    text-shadow: 0 0 18px rgba(42, 171, 238, 0.25);
+    text-shadow: 0 0 18px rgba(42,171,238,.22);
   }
 
-  .logo-sub {
+  .logo-sub{
     font-size: 11px;
     text-transform: uppercase;
-    letter-spacing: 0.18em;
+    letter-spacing: .18em;
     color: var(--text-soft);
   }
 
-  .status-pill {
+  .status-pill{
     padding: 4px 10px;
     font-size: 11px;
     border-radius: 999px;
     border: 1px solid var(--border-soft);
     color: var(--text-soft);
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
     background: var(--glass);
-    white-space: nowrap;
+    white-space:nowrap;
   }
 
-  .status-pill-dot {
-    width: 6px;
-    height: 6px;
+  .status-pill-dot{
+    width: 6px; height: 6px;
     border-radius: 999px;
     background: #22c55e;
-    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.20);
+    box-shadow: 0 0 0 4px rgba(34,197,94,.18);
   }
 
-  .tagline {
+  .tagline{
     font-size: 13px;
     color: var(--text-soft);
     line-height: 1.5;
   }
 
-  .tabs {
-    display: flex;
+  .tabs{
+    display:flex;
     margin-top: 12px;
     margin-bottom: 10px;
-    background: var(--glass);
-    border-radius: 999px;
     padding: 3px;
+    border-radius: 999px;
     border: 1px solid var(--border-soft);
+    background: rgba(6,10,18,.34);
   }
 
-  .tab {
+  .tab{
     flex: 1 1 0;
     border: none;
     background: transparent;
@@ -170,92 +172,66 @@
     font-size: 13px;
     cursor: pointer;
     color: var(--text-soft);
-    transition: 0.16s ease;
+    transition: .16s ease;
   }
 
-  .tab.active {
-    background: rgba(17, 24, 39, 0.92);
+  .tab.active{
+    background: linear-gradient(180deg, rgba(22,26,40,.90), rgba(12,14,22,.78));
     color: var(--text-main);
-    border: 1px solid rgba(42, 171, 238, 0.18);
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(42,171,238,.20);
+    box-shadow: var(--shadow-tight);
   }
 
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
+  form{ display:flex; flex-direction:column; gap:10px; }
 
-  .tab-panel {
-    display: none;
-    flex-direction: column;
-    gap: 10px;
+  .tab-panel{
+    display:none;
+    flex-direction:column;
+    gap:10px;
     margin-top: 6px;
   }
+  .tab-panel.active{ display:flex; }
 
-  .tab-panel.active {
-    display: flex;
-  }
+  .field-group{ display:flex; flex-direction:column; gap:4px; }
 
-  .field-group {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
+  label{ font-size: 12px; color: var(--text-soft); }
 
-  label {
-    font-size: 12px;
-    color: var(--text-soft);
-  }
-
-  input[type="text"],
-  textarea {
+  input[type="text"], textarea{
     width: 100%;
     border-radius: 999px;
     border: 1px solid var(--border-input);
     padding: 9px 12px;
     font-size: 13px;
-    outline: none;
+    outline:none;
+
     background: var(--input-bg);
     color: var(--text-main);
-    transition: border-color 0.15s ease, background-color 0.15s ease,
-      box-shadow 0.15s ease, transform 0.05s ease;
+
+    transition: border-color .15s ease, background-color .15s ease, box-shadow .15s ease;
   }
 
-  input[type="text"]::placeholder,
-  textarea::placeholder {
-    color: rgba(229, 231, 235, 0.45);
+  input[type="text"]::placeholder, textarea::placeholder{
+    color: rgba(231,233,238,.42);
   }
 
-  textarea {
+  textarea{
     border-radius: 16px;
     resize: vertical;
     min-height: 76px;
   }
 
-  input:focus,
-  textarea:focus {
-    border-color: rgba(42, 171, 238, 0.65);
+  input:focus, textarea:focus{
+    border-color: rgba(42,171,238,.62);
     background: var(--input-bg-focus);
-    box-shadow: 0 0 0 4px rgba(42, 171, 238, 0.14);
+    box-shadow: 0 0 0 4px rgba(42,171,238,.12);
   }
 
-  .two-cols {
-    display: flex;
-    gap: 8px;
-  }
+  .two-cols{ display:flex; gap:8px; }
+  .two-cols .field-group{ flex: 1 1 0; }
 
-  .two-cols .field-group {
-    flex: 1 1 0;
-  }
+  .fuel-options{ display:flex; flex-wrap:wrap; gap:6px; }
 
-  .fuel-options {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  .fuel-chip {
+  .fuel-chip{
     padding: 6px 10px;
     font-size: 12px;
     border-radius: 999px;
@@ -263,71 +239,80 @@
     background: var(--glass);
     color: var(--text-soft);
     cursor: pointer;
-    transition: 0.15s ease;
+    transition: .15s ease;
   }
 
-  .fuel-chip:hover {
-    border-color: rgba(42, 171, 238, 0.35);
-    color: rgba(229, 231, 235, 0.85);
+  .fuel-chip:hover{
+    border-color: rgba(42,171,238,.34);
+    color: rgba(231,233,238,.82);
   }
 
-  .fuel-chip.active {
-    border-color: rgba(42, 171, 238, 0.70);
-    background: linear-gradient(180deg, rgba(42, 171, 238, 0.16), rgba(34, 211, 238, 0.10));
+  .fuel-chip.active{
+    border-color: rgba(42,171,238,.72);
+    background: linear-gradient(180deg, rgba(42,171,238,.14), rgba(34,211,238,.08));
     color: var(--text-main);
-    box-shadow: 0 10px 18px rgba(0, 0, 0, 0.28);
+    box-shadow: 0 10px 18px rgba(0,0,0,.28);
   }
 
-  .hint {
+  .hint{
     font-size: 11px;
-    color: rgba(229, 231, 235, 0.55);
+    color: rgba(231,233,238,.56);
   }
 
-  .btn {
+  /* Graphite glass button: тёмная основа + голубая кромка */
+  .btn{
     margin-top: 10px;
-    border: 1px solid rgba(42, 171, 238, 0.35);
+    width: 100%;
+    border: 1px solid rgba(42,171,238,.40);
     border-radius: 999px;
     padding: 11px 12px;
+
     font-size: 13px;
     font-weight: 650;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
     cursor: pointer;
 
-    background: linear-gradient(180deg, rgba(42, 171, 238, 0.95), rgba(34, 211, 238, 0.75));
-    color: #06101b;
-    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45);
-    width: 100%;
-    transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.12s ease;
+    color: rgba(231,233,238,.96);
+    background:
+      linear-gradient(180deg, rgba(22,26,40,.92), rgba(10,12,18,.90));
+    box-shadow: 0 14px 34px rgba(0,0,0,.55);
+    transition: transform .08s ease, box-shadow .08s ease, filter .12s ease;
+    position: relative;
+    overflow: hidden;
   }
 
-  .btn:hover {
+  .btn::before{
+    content:"";
+    position:absolute;
+    inset:-2px;
+    background: radial-gradient(520px 120px at 20% 0%, rgba(42,171,238,.28), transparent 55%);
+    opacity: .55;
+    pointer-events:none;
+  }
+
+  .btn:hover{
     transform: translateY(-1px);
-    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
-    filter: saturate(1.05);
+    box-shadow: 0 18px 44px rgba(0,0,0,.62);
+    filter: saturate(1.03);
   }
 
-  .btn:active {
+  .btn:active{
     transform: translateY(0);
-    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.50);
+    box-shadow: 0 12px 28px rgba(0,0,0,.58);
   }
 
-  .form-message {
+  .form-message{
     margin-top: 6px;
     font-size: 11px;
     color: var(--text-soft);
     white-space: pre-line;
   }
 
-  .form-message.error {
-    color: var(--error);
-  }
+  .form-message.error{ color: var(--error); }
 
-  .footnote {
+  .footnote{
     margin-top: 14px;
     font-size: 11px;
-    color: rgba(229, 231, 235, 0.55);
+    color: rgba(231,233,238,.56);
     line-height: 1.4;
   }
 </style>
