@@ -4,13 +4,10 @@
   <meta charset="UTF-8" />
   <title>АвтоБаза.PRO — Заявка на подбор / запчасти</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <!-- Telegram WebApp JS -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <style>
     :root{
-      /* Telegram theme support (fallbacks) */
       --tg-bg: var(--tg-theme-bg-color, #0a0d14);
       --tg-text: var(--tg-theme-text-color, #e7e9ee);
       --tg-hint: var(--tg-theme-hint-color, rgba(231,233,238,.62));
@@ -30,21 +27,18 @@
       --shell-bg-2: rgba(20, 24, 38, 0.72);
 
       --glass: rgba(6, 10, 18, 0.42);
-      --glass-2: rgba(6, 10, 18, 0.62);
-
       --input-bg: rgba(6, 10, 18, 0.50);
       --input-bg-focus: rgba(6, 10, 18, 0.78);
 
       --shadow-soft: 0 26px 80px rgba(0, 0, 0, 0.62);
 
-      /* Premium glow tuning */
       --glow: rgba(42,171,238,.22);
       --glow-strong: rgba(42,171,238,.32);
       --edge: rgba(255,255,255,.10);
-      --edge-2: rgba(255,255,255,.06);
 
-      /* App height (set by JS) */
-      --app-height: 100dvh;
+      /* динамика под iOS клавиатуру */
+      --app-height: 100dvh; /* реальная видимая высота (tg.viewportHeight) */
+      --kb: 0px;            /* высота клавиатуры */
     }
 
     *{
@@ -55,18 +49,35 @@
         "SF Pro Text", "SF Pro Display", "Segoe UI", sans-serif;
     }
 
+    /* ВАЖНО: body НЕ скроллится. Скролл внутри .content */
     body{
-      min-height: var(--app-height);
       height: var(--app-height);
+      overflow: hidden;
       color: var(--text-main);
-      padding: 18px 12px 24px;
-      display: flex;
-      justify-content: center;
       background:
         radial-gradient(1100px 640px at 18% 0%, rgba(42,171,238,.14), transparent 60%),
         radial-gradient(900px 560px at 88% 18%, rgba(34,211,238,.08), transparent 58%),
         radial-gradient(700px 500px at 50% 110%, rgba(148,163,184,.06), transparent 55%),
         linear-gradient(180deg, var(--tg-bg), #06070c 92%);
+    }
+
+    .app{
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content{
+      flex: 1 1 auto;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+
+      /* вот это главное: даём “пространство” под клавиатуру */
+      padding: 18px 12px calc(24px + var(--kb));
+
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
     }
 
     .shell{
@@ -101,7 +112,6 @@
         );
       opacity: .9;
     }
-
     .shell > *{ position: relative; z-index: 1; }
 
     @media (min-width: 768px){
@@ -179,7 +189,6 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* inner highlight */
     .glass-btn::before{
       content:"";
       position:absolute;
@@ -190,7 +199,6 @@
       pointer-events:none;
     }
 
-    /* edge sheen */
     .glass-btn::after{
       content:"";
       position:absolute;
@@ -213,7 +221,7 @@
         0 0 26px var(--glow);
     }
 
-    /* ---------- Tabs (NO micro-animation) ---------- */
+    /* Tabs */
     .tabs{
       display:flex;
       gap: 8px;
@@ -237,19 +245,13 @@
       border: none;
     }
 
-    .tab.glass-btn{ box-shadow: 0 10px 18px rgba(0,0,0,.26); }
-
-    .tab.active{
-      color: rgba(231,233,238,.96);
-    }
+    .tab.active{ color: rgba(231,233,238,.96); }
 
     form{ display:flex; flex-direction:column; gap:10px; }
-
     .tab-panel{ display:none; flex-direction:column; gap:10px; margin-top: 6px; }
     .tab-panel.active{ display:flex; }
 
     .field-group{ display:flex; flex-direction:column; gap:4px; }
-
     label{ font-size: 12px; color: var(--text-soft); }
 
     input[type="text"], textarea{
@@ -270,7 +272,7 @@
     textarea{
       border-radius: 16px;
       resize: vertical;
-      min-height: 76px;
+      min-height: 90px;
     }
 
     input:focus, textarea:focus{
@@ -283,7 +285,6 @@
     .two-cols .field-group{ flex: 1 1 0; }
 
     .fuel-options{ display:flex; flex-wrap:wrap; gap:8px; }
-
     .fuel-chip{
       padding: 7px 11px;
       font-size: 12px;
@@ -298,7 +299,6 @@
       color: rgba(231,233,238,.56);
     }
 
-    /* ---------- Submit button (premium glass) ---------- */
     .btn{
       margin-top: 10px;
       width: 100%;
@@ -318,12 +318,6 @@
         0 0 0 1px rgba(42,171,238,.16);
     }
 
-    .btn.glass-btn::before{
-      background: linear-gradient(180deg, rgba(255,255,255,.12), transparent 35%);
-      opacity: .55;
-    }
-
-    /* small active glow on press (no animation) */
     .btn:active{
       transform: translateY(1px);
       box-shadow:
@@ -338,7 +332,6 @@
       color: var(--text-soft);
       white-space: pre-line;
     }
-
     .form-message.error{ color: var(--error); }
 
     .footnote{
@@ -351,162 +344,182 @@
 </head>
 
 <body>
-  <div class="shell">
-    <header class="header">
-      <div class="brand-row">
-        <div class="logo-word">
-          <div class="logo-main">АвтоБаза.PRO</div>
-          <div class="logo-sub">Korea · Premium</div>
-        </div>
-        <div class="status-pill">
-          <span class="status-pill-dot"></span>
-          Мини-анкета
-        </div>
+  <div class="app">
+    <div class="content" id="contentScroll">
+      <div class="shell">
+        <header class="header">
+          <div class="brand-row">
+            <div class="logo-word">
+              <div class="logo-main">АвтоБаза.PRO</div>
+              <div class="logo-sub">Korea · Premium</div>
+            </div>
+            <div class="status-pill">
+              <span class="status-pill-dot"></span>
+              Мини-анкета
+            </div>
+          </div>
+          <p class="tagline">
+            Заказ авто из Южной Кореи | Китая | Европы |
+            Выберите вкладку: Подбор Авто или Авто запчастей.
+          </p>
+        </header>
+
+        <main>
+          <div class="tabs">
+            <button class="tab glass-btn active" data-tab="car" type="button">Подбор авто</button>
+            <button class="tab glass-btn" data-tab="parts" type="button">Авто запчасти</button>
+          </div>
+
+          <form id="leadForm">
+            <div class="tab-panel active" id="tab-car">
+              <div class="field-group">
+                <label for="carBrand">Марка и модель</label>
+                <input type="text" id="carBrand" placeholder="Например: Genesis GV80, Kia Carnival, BMW 520i" />
+              </div>
+
+              <div class="two-cols">
+                <div class="field-group">
+                  <label for="carYear">Год выпуска (от / до)</label>
+                  <input type="text" id="carYear" placeholder="Например: от 2020 или 2021–2023" />
+                </div>
+                <div class="field-group">
+                  <label for="carMileage">Пробег, км</label>
+                  <input type="text" id="carMileage" placeholder="Например: до 80 000 км" />
+                </div>
+              </div>
+
+              <div class="field-group">
+                <label>Топливо</label>
+                <div class="fuel-options" id="fuelOptions">
+                  <button type="button" class="fuel-chip glass-btn active" data-fuel="Дизель">Дизель</button>
+                  <button type="button" class="fuel-chip glass-btn" data-fuel="Бензин">Бензин</button>
+                  <button type="button" class="fuel-chip glass-btn" data-fuel="Гибрид">Гибрид</button>
+                  <button type="button" class="fuel-chip glass-btn" data-fuel="Электричка">Электричка</button>
+                  <button type="button" class="fuel-chip glass-btn" data-fuel="Газ">Газ</button>
+                </div>
+              </div>
+
+              <div class="two-cols">
+                <div class="field-group">
+                  <label for="carRegion">Регион получения авто</label>
+                  <input type="text" id="carRegion" placeholder="Москва, Краснодар, Владивосток, другой" />
+                </div>
+                <div class="field-group">
+                  <label for="carPhone">Телефон для связи</label>
+                  <input type="text" id="carPhone" placeholder="Например: +7 999 123-45-67" />
+                </div>
+              </div>
+
+              <div class="field-group">
+                <label for="carBudget">Бюджет, ₽</label>
+                <input type="text" id="carBudget" placeholder="Например: до 3 500 000 ₽" />
+              </div>
+
+              <div class="field-group">
+                <label for="carComment">Дополнительно (VIN, комплектация, цвет)</label>
+                <textarea id="carComment" placeholder="Напишите VIN (если есть), желаемую комплектацию, цвет, сроки…"></textarea>
+                <div class="hint">
+                  Можно указать телефон или удобное время для связи — менеджер свяжется с вами в Telegram или по телефону.
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-panel" id="tab-parts">
+              <div class="field-group">
+                <label for="partsBrand">Марка и модель авто</label>
+                <input type="text" id="partsBrand" placeholder="Например: Kia Carnival 2.2D, Hyundai Solaris" />
+              </div>
+
+              <div class="two-cols">
+                <div class="field-group">
+                  <label for="partsYear">Год выпуска</label>
+                  <input type="text" id="partsYear" placeholder="Например: 2023" />
+                </div>
+                <div class="field-group">
+                  <label for="partsVin">VIN (если есть)</label>
+                  <input type="text" id="partsVin" placeholder="Например: KNAM64..." />
+                </div>
+              </div>
+
+              <div class="field-group">
+                <label for="partsNeed">Что нужно (название запчасти / узла)</label>
+                <input type="text" id="partsNeed" placeholder="Например: передний бампер, левая фара, двигатель" />
+              </div>
+
+              <div class="field-group">
+                <label for="partsNumber">Оригинальный номер / артикул (если есть)</label>
+                <input type="text" id="partsNumber" placeholder="Например: 92101-S000, 28113-5H000" />
+              </div>
+
+              <div class="two-cols">
+                <div class="field-group">
+                  <label for="partsRegion">Регион / город доставки</label>
+                  <input type="text" id="partsRegion" placeholder="Москва, Краснодар, Владивосток, другой" />
+                </div>
+                <div class="field-group">
+                  <label for="partsPhone">Телефон для связи</label>
+                  <input type="text" id="partsPhone" placeholder="Например: +7 999 123-45-67" />
+                </div>
+              </div>
+
+              <div class="field-group">
+                <label for="partsComment">Дополнительно (фото, срочность, пожелания)</label>
+                <textarea id="partsComment" placeholder="Напишите всё, что важно: сторона, цвет, есть ли фото детали, срочность…"></textarea>
+                <div class="hint">Фото детали можно будет прислать уже в диалоге с менеджером.</div>
+              </div>
+            </div>
+
+            <button type="submit" class="btn glass-btn">Отправить</button>
+            <div id="formMessage" class="form-message"></div>
+          </form>
+
+          <p class="footnote">
+            Отправляя заявку, вы соглашаетесь с обработкой ваших данных для подбора автомобиля или запчастей и для обратной связи.
+            Менеджер свяжется с вами в ближайшее время.
+          </p>
+        </main>
       </div>
-      <p class="tagline">
-        Заказ авто из Южной Кореи | Китая | Европы |
-        Выберите вкладку: Подбор Авто или Авто запчастей.
-      </p>
-    </header>
-
-    <main>
-      <div class="tabs">
-        <button class="tab glass-btn active" data-tab="car" type="button">Подбор авто</button>
-        <button class="tab glass-btn" data-tab="parts" type="button">Авто запчасти</button>
-      </div>
-
-      <form id="leadForm">
-        <!-- Вкладка: Подбор авто -->
-        <div class="tab-panel active" id="tab-car">
-          <div class="field-group">
-            <label for="carBrand">Марка и модель</label>
-            <input type="text" id="carBrand" placeholder="Например: Genesis GV80, Kia Carnival, BMW 520i" />
-          </div>
-
-          <div class="two-cols">
-            <div class="field-group">
-              <label for="carYear">Год выпуска (от / до)</label>
-              <input type="text" id="carYear" placeholder="Например: от 2020 или 2021–2023" />
-            </div>
-            <div class="field-group">
-              <label for="carMileage">Пробег, км</label>
-              <input type="text" id="carMileage" placeholder="Например: до 80 000 км" />
-            </div>
-          </div>
-
-          <div class="field-group">
-            <label>Топливо</label>
-            <div class="fuel-options" id="fuelOptions">
-              <button type="button" class="fuel-chip glass-btn active" data-fuel="Дизель">Дизель</button>
-              <button type="button" class="fuel-chip glass-btn" data-fuel="Бензин">Бензин</button>
-              <button type="button" class="fuel-chip glass-btn" data-fuel="Гибрид">Гибрид</button>
-              <button type="button" class="fuel-chip glass-btn" data-fuel="Электричка">Электричка</button>
-              <button type="button" class="fuel-chip glass-btn" data-fuel="Газ">Газ</button>
-            </div>
-          </div>
-
-          <div class="two-cols">
-            <div class="field-group">
-              <label for="carRegion">Регион получения авто</label>
-              <input type="text" id="carRegion" placeholder="Москва, Краснодар, Владивосток, другой" />
-            </div>
-            <div class="field-group">
-              <label for="carPhone">Телефон для связи</label>
-              <input type="text" id="carPhone" placeholder="Например: +7 999 123-45-67" />
-            </div>
-          </div>
-
-          <div class="field-group">
-            <label for="carBudget">Бюджет, ₽</label>
-            <input type="text" id="carBudget" placeholder="Например: до 3 500 000 ₽" />
-          </div>
-
-          <div class="field-group">
-            <label for="carComment">Дополнительно (VIN, комплектация, цвет)</label>
-            <textarea id="carComment" placeholder="Напишите VIN (если есть), желаемую комплектацию, цвет, сроки…"></textarea>
-            <div class="hint">
-              Можно указать телефон или удобное время для связи — менеджер свяжется с вами в Telegram или по телефону.
-            </div>
-          </div>
-        </div>
-
-        <!-- Вкладка: Запчасти -->
-        <div class="tab-panel" id="tab-parts">
-          <div class="field-group">
-            <label for="partsBrand">Марка и модель авто</label>
-            <input type="text" id="partsBrand" placeholder="Например: Kia Carnival 2.2D, Hyundai Solaris" />
-          </div>
-
-          <div class="two-cols">
-            <div class="field-group">
-              <label for="partsYear">Год выпуска</label>
-              <input type="text" id="partsYear" placeholder="Например: 2023" />
-            </div>
-            <div class="field-group">
-              <label for="partsVin">VIN (если есть)</label>
-              <input type="text" id="partsVin" placeholder="Например: KNAM64..." />
-            </div>
-          </div>
-
-          <div class="field-group">
-            <label for="partsNeed">Что нужно (название запчасти / узла)</label>
-            <input type="text" id="partsNeed" placeholder="Например: передний бампер, левая фара, двигатель" />
-          </div>
-
-          <div class="field-group">
-            <label for="partsNumber">Оригинальный номер / артикул (если есть)</label>
-            <input type="text" id="partsNumber" placeholder="Например: 92101-S000, 28113-5H000" />
-          </div>
-
-          <div class="two-cols">
-            <div class="field-group">
-              <label for="partsRegion">Регион / город доставки</label>
-              <input type="text" id="partsRegion" placeholder="Москва, Краснодар, Владивосток, другой" />
-            </div>
-            <div class="field-group">
-              <label for="partsPhone">Телефон для связи</label>
-              <input type="text" id="partsPhone" placeholder="Например: +7 999 123-45-67" />
-            </div>
-          </div>
-
-          <div class="field-group">
-            <label for="partsComment">Дополнительно (фото, срочность, пожелания)</label>
-            <textarea id="partsComment" placeholder="Напишите всё, что важно: сторона, цвет, есть ли фото детали, срочность…"></textarea>
-            <div class="hint">Фото детали можно будет прислать уже в диалоге с менеджером.</div>
-          </div>
-        </div>
-
-        <button type="submit" class="btn glass-btn">Отправить</button>
-        <div id="formMessage" class="form-message"></div>
-      </form>
-
-      <p class="footnote">
-        Отправляя заявку, вы соглашаетесь с обработкой ваших данных для подбора автомобиля или запчастей и для обратной связи.
-        Менеджер свяжется с вами в ближайшее время.
-      </p>
-    </main>
+    </div>
   </div>
 
   <script>
     const tg = window.Telegram?.WebApp;
+    const contentScroll = document.getElementById("contentScroll");
 
-    // Fix "jump" when keyboard opens: use Telegram viewportStableHeight
-    function setAppHeight() {
-      if (tg && typeof tg.viewportStableHeight === "number" && tg.viewportStableHeight > 0) {
-        document.documentElement.style.setProperty("--app-height", tg.viewportStableHeight + "px");
-      } else {
-        document.documentElement.style.setProperty("--app-height", window.innerHeight + "px");
-      }
+    function setAppMetrics() {
+      // используем viewportHeight (реально видимая высота), чтобы скролл работал корректно с клавиатурой
+      const vh = (tg && typeof tg.viewportHeight === "number" && tg.viewportHeight > 0)
+        ? tg.viewportHeight
+        : window.innerHeight;
+
+      document.documentElement.style.setProperty("--app-height", vh + "px");
+
+      // высота клавиатуры (примерно): stable - current
+      const stable = (tg && typeof tg.viewportStableHeight === "number") ? tg.viewportStableHeight : vh;
+      const kb = Math.max(0, stable - vh);
+      document.documentElement.style.setProperty("--kb", kb + "px");
     }
 
     if (tg) {
       tg.ready();
-      setAppHeight();
-      tg.onEvent("viewportChanged", setAppHeight);
+      // tg.expand(); // по желанию (если хочешь всегда fullscreen)
+      setAppMetrics();
+      tg.onEvent("viewportChanged", setAppMetrics);
     } else {
-      setAppHeight();
-      window.addEventListener("resize", setAppHeight);
+      setAppMetrics();
+      window.addEventListener("resize", setAppMetrics);
     }
+
+    // При фокусе — гарантированно показываем поле (особенно textarea внизу)
+    document.addEventListener("focusin", (e) => {
+      const el = e.target;
+      if (!el || !(el.matches("input, textarea"))) return;
+      setTimeout(() => {
+        try {
+          el.scrollIntoView({ block: "center", behavior: "smooth" });
+        } catch (_) {}
+      }, 250);
+    });
 
     const BOT_USERNAME = "abazaprosecbot";
 
@@ -632,7 +645,6 @@
 
         form.reset();
 
-        // reset fuel
         selectedFuel = "Дизель";
         fuelButtons.forEach((b) => b.classList.remove("active"));
         const firstFuel = document.querySelector('.fuel-chip[data-fuel="Дизель"]');
